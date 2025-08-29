@@ -11,12 +11,20 @@ public class RedisSubscriber extends JedisPubSub {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final ClienteCacheService cacheService;
+
+    public RedisSubscriber(ClienteCacheService cacheService) {
+        this.cacheService = cacheService;
+    }
+
     @Override
     public void onMessage(String channel, String message) {
         log.info("Mensagem recebida no canal '{}'", channel);
         try {
             ClienteDTO cliente = objectMapper.readValue(message, ClienteDTO.class);
-            log.info("Novo cliente recebido via Pub/Sub: ID={}, Nome='{}'", cliente.id(), cliente.nome());
+
+            cacheService.cacheCliente(cliente);
+
         } catch (Exception e) {
             log.error("Falha ao processar mensagem do canal '{}'.", channel, e);
         }

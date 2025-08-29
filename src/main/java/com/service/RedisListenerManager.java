@@ -12,8 +12,8 @@ public class RedisListenerManager {
     private final RedisSubscriber subscriber;
     private static final String CHANNEL_NAME = "clientes-topic";
 
-    public RedisListenerManager() {
-        this.subscriber = new RedisSubscriber();
+    public RedisListenerManager(ClienteCacheService cacheService) {
+        this.subscriber = new RedisSubscriber(cacheService);
         this.subscriberThread = new Thread(() -> {
             try (Jedis jedis = RedisConfig.getJedis()) {
                 log.info("Subscriber conectado. Ouvindo canal '{}'...", CHANNEL_NAME);
